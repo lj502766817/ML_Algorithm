@@ -32,7 +32,7 @@ $$l(\theta)=\log{L(\theta)}=\sum_{i=1}^{m}(y_i\log(h_\theta(x_i))+(1-y_i)\log(1-
 
 此时是梯度上升求最大值,那么可以引入:
 
-$$J(\theta)=-\frac{1}{m}l(\theta)$$
+$$J(\theta)=-\frac{1}{m}l(\theta)\tag{即是损失函数}$$
 
 转换成梯度下降的任务,那么对于特征j来说就有:
 
