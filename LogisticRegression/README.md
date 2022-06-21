@@ -50,10 +50,9 @@ $$\theta=\theta-\alpha\frac{1}{m}\sum_{i=1}^m(h_\theta(x_i)-y_i)x_i^j$$
 
 针对多分类的逻辑回归,在通过线性回归获得了预测值的数值后(可以将这个数值理解为属于这个类别的分数),就通过softmax函数:
 
-$$\hat{p}_k=\delta(s(x))_k=\frac{exp(s_k(x))}{\sum_{j=1}^K{exp(s_j(x))}}$$
+$$\hat{p}_k=\delta(s(x))_k={exp(s_k(x))\over\sum_{j=1}^K{exp(s_j(x))}}$$
 
 进行放大并计算概率.
 
 这样损失函数可以表示为:
-
 $$J(\theta)=-\frac{1}{m}\sum_{i=1}^m\sum_{k=1}^Kj_k^{(i)}\log(\hat{p}_k^i)$$
