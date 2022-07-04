@@ -57,5 +57,15 @@ L(w,b,\alpha)={{1\over2} ||w||^2}-\sum_{i=1}^{n}\alpha_i(y_i\cdot(w^T \cdot \phi
 $$
 并且由于对偶性质(KKT条件),我们可以将$\operatorname{min}_{w,b}\operatorname{max}_\alpha L(w,b,\alpha)$的问题转换成$\operatorname{max}_{\alpha}\operatorname{mim}_{w,b}L(w,b,\alpha)$的问题,然后就分别对$w$,$b$求偏导,然后带入原式就得到一个与$\alpha$有关的式子,然后对$\alpha$求极大值,此时可以将这个式子取负转换成求$\alpha$的极小值,求得了$\alpha$之后就能反推得到$w,b$了
 
+#### 软间隔
 
+为了处理数据中的噪声点,那么我们可以把条件放松一些,那么就可以将限制条件变成下面的式子
+$$
+y_i\cdot(w^T \cdot \phi(x_i)+b)\geq1-\xi_i
+$$
+那么原来的目标函数就变成了
+$$
+\operatorname{min}{{1\over2} ||w||^2}+C\sum_{i=1}^{n}\xi_i
+$$
+可以看到$C$越大那么为了使目标函数小,$\xi$就会越小,即限制条件就越严格,反过来$C$越小,那么限制条件就会越松散
 
