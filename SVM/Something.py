@@ -201,3 +201,94 @@ plot_dataset(X, y, [-1.5, 2.5, -1, 1.5])
 plt.title(r"$d=10, r=100, C=5$", fontsize=18)
 
 plt.show()
+
+
+# 高斯核函数,原理上降就是选择了几个地标,样本通过径向基函数转换后就变成了几个维度
+# https://blog.csdn.net/qq_41033011/article/details/109217394
+def gaussian_rbf(x, landmark, gamma):
+    return np.exp(-gamma * np.linalg.norm(x - landmark, axis=1) ** 2)
+
+
+X1D = np.linspace(-4, 4, 9).reshape(-1, 1)
+X2D = np.c_[X1D, X1D ** 2]
+gamma = 0.3
+
+x1s = np.linspace(-4.5, 4.5, 200).reshape(-1, 1)
+x2s = gaussian_rbf(x1s, -2, gamma)
+x3s = gaussian_rbf(x1s, 1, gamma)
+
+XK = np.c_[gaussian_rbf(X1D, -2, gamma), gaussian_rbf(X1D, 1, gamma)]
+yk = np.array([0, 0, 1, 1, 1, 1, 1, 0, 0])
+
+plt.figure(figsize=(11, 4))
+
+plt.subplot(121)
+plt.grid(True, which='both')
+plt.axhline(y=0, color='k')
+plt.scatter(x=[-2, 1], y=[0, 0], s=150, alpha=0.5, c="red")
+plt.plot(X1D[:, 0][yk == 0], np.zeros(4), "bs")
+plt.plot(X1D[:, 0][yk == 1], np.zeros(5), "g^")
+plt.plot(x1s, x2s, "g--")
+plt.plot(x1s, x3s, "b:")
+plt.gca().get_yaxis().set_ticks([0, 0.25, 0.5, 0.75, 1])
+plt.xlabel(r"$x_1$", fontsize=20)
+plt.ylabel(r"Similarity", fontsize=14)
+plt.annotate(r'$\mathbf{x}$',
+             xy=(X1D[3, 0], 0),
+             xytext=(-0.5, 0.20),
+             ha="center",
+             arrowprops=dict(facecolor='black', shrink=0.1),
+             fontsize=18,
+             )
+plt.text(-2, 0.9, "$x_2$", ha="center", fontsize=20)
+plt.text(1, 0.9, "$x_3$", ha="center", fontsize=20)
+plt.axis([-4.5, 4.5, -0.1, 1.1])
+
+plt.subplot(122)
+plt.grid(True, which='both')
+plt.axhline(y=0, color='k')
+plt.axvline(x=0, color='k')
+plt.plot(XK[:, 0][yk == 0], XK[:, 1][yk == 0], "bs")
+plt.plot(XK[:, 0][yk == 1], XK[:, 1][yk == 1], "g^")
+plt.xlabel(r"$x_2$", fontsize=20)
+plt.ylabel(r"$x_3$  ", fontsize=20, rotation=0)
+plt.annotate(r'$\phi\left(\mathbf{x}\right)$',
+             xy=(XK[3, 0], XK[3, 1]),
+             xytext=(0.65, 0.50),
+             ha="center",
+             arrowprops=dict(facecolor='black', shrink=0.1),
+             fontsize=18,
+             )
+plt.plot([-0.1, 1.1], [0.57, -0.1], "r--", linewidth=3)
+plt.axis([-0.1, 1.1, -0.1, 1.1])
+
+plt.subplots_adjust(right=1)
+# 可以看到样本在一维的情况下是不可分的,但是扩展到二维的时候就是可分的了
+plt.show()
+
+# 参数对高斯核的影响
+# 还有sklearn里的高斯核具体是怎么算的
+# https://blog.csdn.net/weixin_38243001/article/details/119541539?spm=1001.2101.3001.6650.10&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7Edefault-10-119541539-blog-88316482.pc_relevant_aa2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7Edefault-10-119541539-blog-88316482.pc_relevant_aa2&utm_relevant_index=14
+gamma1, gamma2 = 0.1, 5
+C1, C2 = 0.001, 1000
+hyperparams = (gamma1, C1), (gamma1, C2), (gamma2, C1), (gamma2, C2)
+
+svm_clfs = []
+for gamma, C in hyperparams:
+    rbf_kernel_svm_clf = Pipeline([
+        ("scaler", StandardScaler()),
+        ("svm_clf", SVC(kernel="rbf", gamma=gamma, C=C))
+    ])
+    rbf_kernel_svm_clf.fit(X, y)
+    svm_clfs.append(rbf_kernel_svm_clf)
+
+plt.figure(figsize=(11, 7))
+
+for i, svm_clf in enumerate(svm_clfs):
+    plt.subplot(221 + i)
+    plot_predictions(svm_clf, [-1.5, 2.5, -1, 1.5])
+    plot_dataset(X, y, [-1.5, 2.5, -1, 1.5])
+    gamma, C = hyperparams[i]
+    plt.title(r"$\gamma = {}, C = {}$".format(gamma, C), fontsize=16)
+# 大gamma值会使每个样本收到影响大,那么决策边界会变得不规则,小gamma值则相反,决策边界会更光滑些
+plt.show()
