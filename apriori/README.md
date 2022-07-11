@@ -36,7 +36,7 @@ X==>Y:
 
 #### Leverage 与 Conviction
 
-这两者和lift类似,都是值越大,关联程度越大
+这两者和lift类似,都是值越大,关联程度越大,用的不是很多
 
 - Leverage :$P(A,B)-P(A)P(B)$
 - Conviction:$P(A)P(!B)/P(A,!B)$
