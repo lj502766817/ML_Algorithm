@@ -9,6 +9,7 @@ def load_data_set():
 
 def create_c1(data_set):
     """
+    得到单项集
     创建只含单个项的不可变项集
     """
     C1 = []
@@ -92,6 +93,7 @@ def generate_rules(L, support_data, min_conf=0.6):
     # index从1开始,因为index为0的项集都是单元素的项集,没有置信度
     for i in range(1, len(L)):
         for freq_set in L[i]:
+            # 将多元素的项集拆开,然后组合看看两两的置信度
             H1 = [frozenset([item]) for item in freq_set]
             rules_from_conseq(freq_set, H1, support_data, rule_list, min_conf)
     return rule_list
@@ -99,19 +101,26 @@ def generate_rules(L, support_data, min_conf=0.6):
 
 def rules_from_conseq(freq_set, H, support_data, rule_list, min_conf=0.6):
     """
-    计算freq_set项集拆开后的项H的置信度
+    计算项集的置信度,
+    如果是{2,3}就是{2}==>{3}和{3}==>{2}的置信度,
+    如果是{2,3,5}就是{2,3}==>{5},{2,5}=>{3}的置信度,依次类推
     """
     m = len(H[0])
     while len(freq_set) > m:
         H = cal_conf(freq_set, H, support_data, rule_list, min_conf)
         if len(H) > 1:
-            apriori_gen(H, m + 1)
+            # 将得到的超集继续计算置信度,例如上面一行是得到{2}==>{3,5}的置信度,
+            # 这里就会再计算得到{3,5}==>{2}的置信度
+            H = apriori_gen(H, m + 1)
             m += 1
         else:
             break
 
 
 def cal_conf(freq_set, H, support_data, rule_list, min_conf=0.6):
+    """
+    计算置信度
+    """
     prunedh = []
     for conseq in H:
         conf = support_data[freq_set] / support_data[freq_set - conseq]
