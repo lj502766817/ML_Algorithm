@@ -13,3 +13,84 @@
 
 #### 数学原理
 
+高维到低维的投影可用$y=w^Tx$表示,那么目标就是需要求得$w$
+
+首先每类样本的均值为
+
+$$
+\mu_i={1\over N_i}\sum_{x\in w_i}x
+$$
+
+那么投影之后的均值为
+
+$$
+\tilde{\mu_i}={1\over N_i}\sum_{y\in w_i}y={1\over N_i}\sum_{x\in w_i}w^Tx=w^T\mu_i
+$$
+
+这样可以得到投影后两类样本中心点均值的距离$J(w)$为
+
+$$
+J(w)=|\tilde{\mu_1}-\tilde{\mu_2}|=|w^t(\mu_1-\mu_2)|
+$$
+
+这样看来就有了目标函数$J(w)$了,只需要让$J(w)$越大就越好了,但是实际上有可能投影到低维空间上的样本散布很散,导致可能两类样本的均值中心点离得很远,但是两类样本依然有很多重合的地方,那么这个时候就要求各类样本自身散布比较密集,那么就有:
+
+$$
+\tilde{s_i}^2=\sum_{y\in w_i}(y-\tilde{\mu_i})^2
+$$
+
+越小越好,这样就得到了最终的目标函数$J(w)$就是:
+
+$$
+J(w)={{|\tilde{\mu_1}-\tilde{\mu_2}|^2}\over \tilde{s_1}^2+\tilde{s_2}^2}
+$$
+
+而目标就是使这个$J(w)$越大越好,那么先对一些量进行转化
+
+将散列值的公式展开可以得到:
+
+$$
+\tilde{s_i}^2=\sum_{y\in w_i}(y-\tilde{\mu_i})^2=\sum_{x\in w_i}(w^Tx-w^T\mu_i)^2=\sum_{x\in w_i}w^T(x-\mu_i)(x-\mu_i)^Tw
+$$
+
+其中,由于*散布矩阵*为:
+
+$$
+s_i=\sum_{x\in w_i}(x-\mu_i)(x-\mu_i)^T
+$$
+
+那么上面的式子就变成了$\tilde{s_i}^2=\sum_{x\in w_i}w^Ts_iw$,并且得到了*类内散布矩阵*:$S_w=s_1+s_2$,于是目标函数$J(w)$的分母就变成了:
+
+$$
+\tilde{s_1}^2+\tilde{s_2}^2=w^t S_w w
+$$
+
+然后将目标函数的分子也展开:
+
+$$
+|\tilde{\mu_1}-\tilde{\mu_2}|^2=(w^t\mu_1-w^t\mu_2)^2=w^t(\mu_1-\mu_2)(\mu_1-\mu_2)w=w^t S_B w \\
+S_B称为类间散布矩阵
+$$
+
+这样最终的$J(w)$就是
+
+$$
+J(w)={{w^t S_B w}\over{w^t S_w w}}
+$$
+
+为了求解$w$,我们需要做归一化,将分母的长度限制为1,因为如果不对分子分母做限制的话,如果同时对分子分母做放缩的话,就会有无穷多个解.然后使用拉格朗日乘子法得出
+
+$$
+c(w)=w^t S_B w-\lambda(w^t S_w w-1) \\
+\Rightarrow {dc\over dw}=2S_B w-2\lambda S_w w=0 \\
+\Rightarrow S_B w=\lambda S_w w
+$$
+
+然后式子两边都乘上$S_w$的逆,就得到
+
+$$
+S_w^{-1}S_B w=\lambda w \\ 
+\Rightarrow w就是矩阵S_w^{-1}S_B的特征向量
+$$
+
+最终求解出了$w$
