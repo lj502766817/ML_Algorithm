@@ -62,26 +62,26 @@ $$
 那么上面的式子就变成了$\tilde{s_i}^2=\sum_{x\in w_i}w^Ts_iw$,并且得到了*类内散布矩阵*:$S_w=s_1+s_2$,于是目标函数$J(w)$的分母就变成了:
 
 $$
-\tilde{s_1}^2+\tilde{s_2}^2=w^t S_w w
+\tilde{s_1}^2+\tilde{s_2}^2=w^T S_w w
 $$
 
 然后将目标函数的分子也展开:
 
 $$
-|\tilde{\mu_1}-\tilde{\mu_2}|^2=(w^t\mu_1-w^t\mu_2)^2=w^t(\mu_1-\mu_2)(\mu_1-\mu_2)w=w^t S_B w \\
+|\tilde{\mu_1}-\tilde{\mu_2}|^2=(w^T\mu_1-w^T\mu_2)^2=w^T(\mu_1-\mu_2)(\mu_1-\mu_2)w=w^T S_B w \\
 ,S_B称为类间散布矩阵
 $$
 
 这样最终的$J(w)$就是
 
 $$
-J(w)={{w^t S_B w}\over{w^t S_w w}}
+J(w)={{w^T S_B w}\over{w^T S_w w}}
 $$
 
 为了求解$w$,我们需要做归一化,将分母的长度限制为1,因为如果不对分子分母做限制的话,如果同时对分子分母做放缩的话,就会有无穷多个解.然后使用拉格朗日乘子法得出
 
 $$
-c(w)=w^t S_B w-\lambda(w^t S_w w-1) \\
+c(w)=w^T S_B w-\lambda(w^T S_w w-1) \\
 \Rightarrow {dc\over dw}=2S_B w-2\lambda S_w w=0 \\
 \Rightarrow S_B w=\lambda S_w w
 $$
